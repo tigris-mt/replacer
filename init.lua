@@ -98,8 +98,10 @@ minetest.register_tool("replacer:replacer", {
         end
 
         inv:remove_item("main", ItemStack(item.name))
-        minetest.place_node(pos, item)
+
+        minetest.place_node(vector.add(pos, vector.new(0, 1, 0)), item)
         minetest.swap_node(pos, item)
+
         return itemstack
     end,
 })
