@@ -21,7 +21,7 @@ local function handle_meta(s, node)
             charge = 0,
         }
     end
-    meta.item = node or meta.item or {name = "default:cobblestone", param1 = 0, param2 = 0}
+    meta.item = node or meta.item or {name = "default:cobble", param1 = 0, param2 = 0}
     s:set_metadata(minetest.serialize(meta))
     s:get_meta():set_string("description", "Node Replacer (" .. meta.item.name .. ")")
     return s, meta.item
