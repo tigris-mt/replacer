@@ -174,11 +174,13 @@ end
 
 minetest.register_alias("replacer:replacer", "replacer:replacer1")
 
-minetest.register_craft({
-    output = "replacer:replacer1",
-    recipe = {
-        {"technic:diamond_drill_head", "technic:mining_drill_mk3", "technic:diamond_drill_head"},
-        {"technic:stainless_steel_ingot", "technic:motor", "technic:stainless_steel_ingot"},
-        {"pipeworks:filter", "technic:blue_energy_crystal", "default:copper_ingot"},
-    }
-})
+for _,drill in ipairs{"", "_1", "_2", "_3", "_4", "_5"} do
+    minetest.register_craft({
+        output = "replacer:replacer1",
+        recipe = {
+            {"technic:diamond_drill_head", "technic:mining_drill_mk3" .. drill, "technic:diamond_drill_head"},
+            {"technic:stainless_steel_ingot", "technic:motor", "technic:stainless_steel_ingot"},
+            {"pipeworks:filter", "technic:blue_energy_crystal", "default:copper_ingot"},
+        }
+    })
+end
