@@ -1,14 +1,20 @@
 replacer = {
+    -- Same as MkII drill.
     charge = 200000,
+    -- Nodes that can be replaced per full charge.
     nodes = 1000,
     blacklist = {},
 }
+
+-- Calculate per-node charge.
 replacer.per = replacer.charge / replacer.nodes
 
+-- Blacklisted nodes cannot be placed by the tool.
 function replacer.register_blacklisted_node(name)
     replacer.blacklist[name] = true
 end
 
+-- Builtin blacklist.
 replacer.register_blacklisted_node("air")
 replacer.register_blacklisted_node("ignore")
 
@@ -21,6 +27,7 @@ local function handle_meta(s, node)
             charge = 0,
         }
     end
+    -- Set item from available sources, revert to default:cobble if no other node is specified.
     meta.item = node or meta.item or {name = "default:cobble", param1 = 0, param2 = 0}
     s:set_metadata(minetest.serialize(meta))
     s:get_meta():set_string("description", "Node Replacer (" .. meta.item.name .. ")")
@@ -51,8 +58,10 @@ minetest.register_tool("replacer:replacer", {
             return
         end
 
+        -- Handle meta, setting item to pointed node.
         local item
         itemstack, item = handle_meta(itemstack, node)
+        -- Send alert to player about change.
         minetest.chat_send_player(name, "Node Replacer: " .. item.name)
         return itemstack
     end,
@@ -74,12 +83,14 @@ minetest.register_tool("replacer:replacer", {
             return
         end
 
+        -- Check for node in user's inventory.
         local inv = user:get_inventory()
         if not inv:contains_item("main", ItemStack(item.name)) then
             minetest.chat_send_player(name, "Error: Inventory does not contain necessary items.")
             return
         end
 
+        -- Handle charge.
         local meta = minetest.deserialize(itemstack:get_metadata())
         if meta.charge >= replacer.per then
             meta.charge = meta.charge - replacer.per
@@ -89,17 +100,22 @@ minetest.register_tool("replacer:replacer", {
         end
         itemstack:set_metadata(minetest.serialize(meta))
 
+        -- Dig node as user.
         minetest.node_dig(pos, node, user)
 
+        -- Update and ensure node has been removed.
         node = minetest.get_node(pos)
         if node.name ~= "air" then
             minetest.chat_send_player(name, "Error: Unable to clear position.")
             return itemstack
         end
 
+        -- Remove item.
         inv:remove_item("main", ItemStack(item.name))
 
+        -- Place item (adding y+1 will ensure we get placed at pos).
         minetest.place_node(vector.add(pos, vector.new(0, 1, 0)), item)
+        -- Swap params in for correct rotation.
         minetest.swap_node(pos, item)
 
         return itemstack
