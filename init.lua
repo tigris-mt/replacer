@@ -1,5 +1,5 @@
 replacer = {
-    charge = 50000,
+    charge = 200000,
     nodes = 1000,
     blacklist = {},
 }
