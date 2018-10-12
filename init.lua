@@ -2,9 +2,9 @@ replacer = {
     -- 2x MkII drill.
     charge = 400000,
     -- Nodes that can be replaced per full charge.
-    nodes = 1000,
-    -- Maximum cube mode.
-    max_cube = 3,
+    nodes = 3000,
+    -- Maximum square mode.
+    max_square = 3,
     blacklist = {},
 }
 
@@ -20,10 +20,10 @@ end
 replacer.register_blacklisted_node("air")
 replacer.register_blacklisted_node("ignore")
 
-for i=1,replacer.max_cube do
+for i=1,replacer.max_square do
     local ncur = "replacer:replacer" .. i
-    local nnext = "replacer:replacer" .. ((i == replacer.max_cube) and 1 or (i + 1))
-    local desc = "Node Replacer (Cube " .. i .. ")"
+    local nnext = "replacer:replacer" .. ((i == replacer.max_square) and 1 or (i + 1))
+    local desc = "Node Replacer (Square " .. i .. ")"
 
     technic.register_power_tool(ncur, replacer.charge)
 
@@ -99,7 +99,26 @@ for i=1,replacer.max_cube do
                 return
             end
 
-            local r = vector.new(i - 1, i - 1, i - 1)
+            local look = user:get_look_dir()
+            local extreme = "x"
+            for _,c in ipairs{"y", "z"} do
+                if math.abs(look[c]) > math.abs(look[extreme]) then
+                    extreme = c
+                end
+            end
+
+            local coords = {
+                x = true,
+                y = true,
+                z = true,
+            }
+
+            coords[extreme] = nil
+
+            local r = vector.new()
+            for c in pairs(coords) do
+                r[c] = i - 1
+            end
             local nodes = minetest.find_nodes_in_area(vector.subtract(pos, r), vector.add(pos, r), {node.name})
 
             -- Check for nodes in user's inventory.
@@ -156,10 +175,10 @@ end
 minetest.register_alias("replacer:replacer", "replacer:replacer1")
 
 minetest.register_craft({
-    output = 'replacer:replacer1',
+    output = "replacer:replacer1",
     recipe = {
-        {'default:tin_ingot', 'technic:mining_drill_mk2', 'default:tin_ingot'},
-        {'technic:stainless_steel_ingot', 'technic:motor', 'technic:stainless_steel_ingot'},
-        {'pipeworks:filter', 'technic:blue_energy_crystal', 'default:copper_ingot'},
+        {"technic:diamond_drill_head", "technic:mining_drill_mk3", "technic:diamond_drill_head"},
+        {"technic:stainless_steel_ingot", "technic:motor", "technic:stainless_steel_ingot"},
+        {"pipeworks:filter", "technic:blue_energy_crystal", "default:copper_ingot"},
     }
 })
