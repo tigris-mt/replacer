@@ -47,7 +47,7 @@ for i=1,replacer.max_square do
 				}
 			end
 			-- Set item from available sources, revert to default:cobble if no other node is specified.
-			meta.item = node or meta.item or {name = "default:cobble", param1 = 0, param2 = 0}
+			meta.item = node or (meta.item and meta.item.name) or {name = "default:cobble", param1 = 0, param2 = 0}
 			s:set_metadata(minetest.serialize(meta))
 			s:get_meta():set_string("description", minetest.registered_items[s:get_name()].description .. " (" .. meta.item.name .. " " .. (meta.item.param1 or 0) .. " " .. (meta.item.param2 or 0) .. ")")
 			return s, meta.item
